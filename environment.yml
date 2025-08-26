@@ -1,0 +1,16 @@
+name: docgen-fastapi
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.11
+  - pip
+  - pip:
+      - fastapi
+      - uvicorn[standard]
+      - pydantic
+      - python-multipart
+      - requests
+      - gunicorn
+      - motor              # ✅ Async MongoDB driver (추천)
+      - pymongo            # ✅ Low-level MongoDB driver
