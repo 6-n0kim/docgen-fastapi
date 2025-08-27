@@ -10,7 +10,8 @@ class TestModelInDB(TestModel):
 
 
 
-
+class ProductRequirementsDocumentRequest(BaseModel):
+  requirement : str
 
 
 class ProductRequirementsDocumentDetail(BaseModel):
@@ -23,6 +24,10 @@ class ProductRequirementsDocumentData(BaseModel):
   name: str = Field(...,examples="requirement")
   details: List[ProductRequirementsDocumentDetail] = Field(default_factory=list)
 
+class ProductRequirementsDocumentMetadata(BaseModel):
+  requirementSummary: str = Field(..., examples="test")
+
 class ProductRequirementsDocument(BaseModel):
   id: str = Field(..., examples="unique_id")
+  metadata: ProductRequirementsDocumentMetadata
   data: List[ProductRequirementsDocumentData] = Field(default_factory=list)

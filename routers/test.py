@@ -18,3 +18,7 @@ async def list_users(request: Request):
     db = request.app.state.db
     tests = await db.tests.find().to_list(100)
     return [TestModelInDB(id=str(u["_id"]), test_name=u["test_name"], description=u["description"]) for u in tests]
+
+@router.get("/check")
+async def check_api(request: Request):
+    return {"msg":"hi"}
