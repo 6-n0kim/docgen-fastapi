@@ -12,5 +12,11 @@ dependencies:
       - python-multipart
       - requests
       - gunicorn
-      - motor              # ✅ Async MongoDB driver (추천)
-      - pymongo            # ✅ Low-level MongoDB driver
+      - motor             
+      - python-dotenv
+      - langchain
+      - langchain-openai
+      - openai
+      - openpyxl
+      - crewai
+      - crewai[tools]

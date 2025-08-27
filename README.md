@@ -1,0 +1,3 @@
+- conda env update -f environment.yml --prune
+- conda activate docgen-fastapi
+- uvicorn main:app --reload --host 0.0.0.0 --port 8000
