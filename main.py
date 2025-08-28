@@ -1,9 +1,8 @@
 from typing import Union
 from fastapi import FastAPI
-from routers import document
 from mongo_db import init_db
 from fastapi.middleware.cors import CORSMiddleware
-
+from api.routers import api_router
 app = FastAPI()
 
 origins = [
@@ -22,7 +21,7 @@ app.add_middleware(
 )
 
 init_db(app)
-app.include_router(document.router)
+app.include_router(api_router, prefix="/api")
 
 @app.get("/")
 def read_root():
@@ -31,4 +30,5 @@ def read_root():
 
 @app.get("/items/{item_id}")
 def read_item(item_id: int, q: Union[str, None] = None):
+    print(item_id)
     return {"item_id": item_id, "q": q}

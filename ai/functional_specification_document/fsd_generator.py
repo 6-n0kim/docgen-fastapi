@@ -2,7 +2,7 @@ from pydantic import BaseModel
 from typing import List
 from .agent.list_generator import generate_list
 from .agent.detail_generator import generate_details
-from ..product_requirement_document.prd_generator import Requirement_Document
+from ..models import Requirement_Document
 
 class _detail(BaseModel):
   name : str

@@ -1,8 +1,8 @@
 import json
-from ai.models import llm_openai_turbo
+from ai.llm_models import llm_openai_turbo
 from langchain_core.prompts import PromptTemplate
 from langchain_core.output_parsers import StrOutputParser
-from ...product_requirement_document.prd_generator import Requirement, Requirement_Document
+from ...models import Requirement, Requirement_Document
 from ai.utils import extract_json_from_response
 
 llm = llm_openai_turbo

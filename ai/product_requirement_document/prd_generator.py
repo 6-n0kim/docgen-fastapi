@@ -1,8 +1,7 @@
 import json
-from pydantic import BaseModel
-from typing import List
 
-from ai.models import llm_openai_turbo, llm_openai_4o
+from ai.llm_models import llm_openai_turbo, llm_openai_4o
+from ai.models import Requirement_Document
 from ai.utils import extract_json_from_response
 
 from .agent.detail_generator import generate_details
@@ -12,25 +11,7 @@ from .agent.requirement_summary import summary_requirements
 
 llm = llm_openai_turbo
 llm_4o = llm_openai_4o
-class RequirementDetail(BaseModel) :
-  name : str
-  description : str
-  def tostring(self):
-    return f"세부 요구사항 이름 : {self.name}\n 세부 요구사항 설명 : {self.description}"
 
-class Requirement(BaseModel) : 
-  name : str
-  description : str
-  details : List[RequirementDetail]
-  def tostring(self):
-    return f"상위 요구사항 이름 : {self.name}\n상위 요구사항 설명 : {self.description}"+'\n'.join(detail.tostring() for detail in self.details)
-
-class _metadata(BaseModel) :
-  requirement_summary : str
-class Requirement_Document(BaseModel) :
-  name : str
-  metadata : _metadata
-  data : List[Requirement]
 
 
 fixed_questions = ["어떤걸 만들건가요?", "타겟층이 어떤 사람들 인가요?"]

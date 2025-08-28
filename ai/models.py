@@ -1,19 +1,22 @@
-import os
-from dotenv import load_dotenv
-from langchain_openai import ChatOpenAI
+from pydantic import BaseModel
+from typing import List
 
-load_dotenv()
+class RequirementDetail(BaseModel) :
+  name : str
+  description : str
+  def tostring(self):
+    return f"세부 요구사항 이름 : {self.name}\n 세부 요구사항 설명 : {self.description}"
 
+class Requirement(BaseModel) : 
+  name : str
+  description : str
+  details : List[RequirementDetail]
+  def tostring(self):
+    return f"상위 요구사항 이름 : {self.name}\n상위 요구사항 설명 : {self.description}"+'\n'.join(detail.tostring() for detail in self.details)
 
-llm_openai_turbo = ChatOpenAI(
-  model_name="gpt-3.5-turbo",
-  temperature=0.7,
-  api_key=os.getenv("OPENAI_API_KEY")
-)
-
-llm_openai_4o = ChatOpenAI(
-  model_name="gpt-4o",
-  temperature=0.7,
-  api_key=os.getenv("OPENAI_API_KEY"),
-  max_tokens=4096
-)
+class Requirement_Metadata(BaseModel) :
+  requirement_summary : str
+class Requirement_Document(BaseModel) :
+  name : str
+  metadata : Requirement_Metadata
+  data : List[Requirement]

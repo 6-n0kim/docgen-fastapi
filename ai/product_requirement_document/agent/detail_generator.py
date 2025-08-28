@@ -1,4 +1,4 @@
-from ai.models import llm_openai_turbo
+from ai.llm_models import llm_openai_turbo
 from langchain_core.prompts import PromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 
