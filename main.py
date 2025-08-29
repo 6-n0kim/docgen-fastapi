@@ -8,6 +8,7 @@ app = FastAPI()
 origins = [
     "http://localhost:3100",
     "http://localhost:8181",
+    "http://192.168.10.220:3100",
     "http://docgen-backend.aicc-project.com",
     "http://docgen.aicc-project.com",
 ]

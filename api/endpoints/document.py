@@ -16,7 +16,7 @@ async def generate_requirement_document(requirement, db, db_object_id):
       )
       print("generate finish")
 
-@router.post("/", response_model=DocumentIdResponse)
+@router.post("/requirement", response_model=DocumentIdResponse)
 async def create_product_requirement_document(requirement: ProductRequirementsDocumentRequest, request: Request):
     db = request.app.state.db
     db_data = ProductRequirementsDocument(owner_id=requirement.owner_id, project_id=requirement.project_id,status="progress")
