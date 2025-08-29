@@ -29,7 +29,7 @@ async def create_product_requirement_document(requirement: ProductRequirementsDo
     return result
 
 @router.get("/requirement/project/{project_id}",response_model=List[ProductRequirementsDocument])
-async def get_product_requirement_document(project_id: str, request : Request): 
+async def get_product_requirement_document_project(project_id: str, request : Request): 
     """
         프로젝트 id를 기반으로 요구사항정의서 목록을 mongodb에서 찾음
     """
@@ -38,7 +38,16 @@ async def get_product_requirement_document(project_id: str, request : Request):
     if documents :
          return [ProductRequirementsDocument(**document) for document in documents]
     return None
-
+@router.get("/requirement/user/{user_id}",response_model=List[ProductRequirementsDocument])
+async def get_product_requirement_document_user(user_id: str, request : Request): 
+    """
+        user id를 기반으로 요구사항정의서 목록을 mongodb에서 찾음
+    """
+    db = request.app.state.db
+    documents = await db.requirement_document.find({"owner_id":user_id}).to_list()
+    if documents :
+         return [ProductRequirementsDocument(**document) for document in documents]
+    return None
 @router.get("/requirement/{id}", response_model=ProductRequirementsDocument)
 async def get_product_requirement_document(id: str, request : Request):
     """
