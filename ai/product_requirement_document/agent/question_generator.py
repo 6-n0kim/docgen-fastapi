@@ -10,7 +10,7 @@ def generate_questions(questions_answers_list, caution=''):
     당신은 웹 개발 기획자 입니다.
     질문 내역을 보고 좋은 요구사항 정의서를 작성하기 위한 추가 질문 목록을 작성해 주세요.
     {caution}
-
+    번호는 제외하고,
     답변 형태는 정해진 json 형태로만 만들어주고 다른 설명은 절대 추가하지 마세요.
     ```json
     {json_template}
@@ -20,8 +20,9 @@ def generate_questions(questions_answers_list, caution=''):
   """
   prompt = PromptTemplate.from_template(template)
   chain = prompt | llm | StrOutputParser()
-  return chain.invoke({
+  result = chain.invoke({
     "caution":caution,
     "questions_answers_list":'\n'.join(questions_answers_list),
     "json_template": '{"questions":[string]}'
   })
+  return result

@@ -1,9 +1,9 @@
 from fastapi import APIRouter
-from .endpoints import document
+from .endpoints import requirement_document
 
 api_router = APIRouter()
 api_router.include_router(
-  document.router, 
-  prefix="/document",
-  tags=["document"]
+  requirement_document.router, 
+  prefix="/document/requirement",
+  tags=["requirement"]
   )

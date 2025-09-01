@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, Request
-from schemas.document import ProductRequirementsDocumentRequest, ProductRequirementsDocument,DocumentIdResponse
-from ai.product_requirement_document.prd_generator import generate_document
+from schemas.document import ProductRequirementsDocumentRequest, ProductRequirementsDocument,DocumentIdResponse, ProductRequirementsDocumentListItemResponse, DocumentQuestions
+from ai.product_requirement_document.prd_generator import generate_document, generate_question_list
 from mongo_db import init_db, db
 import asyncio
 from bson import ObjectId
@@ -16,7 +16,7 @@ async def generate_requirement_document(requirement, db, db_object_id):
       )
       print("generate finish")
 
-@router.post("/requirement", response_model=DocumentIdResponse)
+@router.post("/", response_model=DocumentIdResponse)
 async def create_product_requirement_document(requirement: ProductRequirementsDocumentRequest, request: Request):
     db = request.app.state.db
     db_data = ProductRequirementsDocument(owner_id=requirement.owner_id, project_id=requirement.project_id,status="progress")
@@ -28,17 +28,21 @@ async def create_product_requirement_document(requirement: ProductRequirementsDo
     result = DocumentIdResponse(document_id=str(db_object_id))
     return result
 
-@router.get("/requirement/project/{project_id}",response_model=List[ProductRequirementsDocument])
+@router.get("/project/{project_id}",response_model=List[ProductRequirementsDocumentListItemResponse])
 async def get_product_requirement_document_project(project_id: str, request : Request): 
     """
         프로젝트 id를 기반으로 요구사항정의서 목록을 mongodb에서 찾음
     """
     db = request.app.state.db
     documents = await db.requirement_document.find({"project_id":project_id}).to_list()
+
     if documents :
-         return [ProductRequirementsDocument(**document) for document in documents]
+        for document in documents :
+            document["document"] = None
+            document["id"] = str(document["_id"])
+        return [ProductRequirementsDocumentListItemResponse(**document) for document in documents]
     return None
-@router.get("/requirement/user/{user_id}",response_model=List[ProductRequirementsDocument])
+@router.get("/user/{user_id}",response_model=List[ProductRequirementsDocumentListItemResponse])
 async def get_product_requirement_document_user(user_id: str, request : Request): 
     """
         user id를 기반으로 요구사항정의서 목록을 mongodb에서 찾음
@@ -46,9 +50,12 @@ async def get_product_requirement_document_user(user_id: str, request : Request)
     db = request.app.state.db
     documents = await db.requirement_document.find({"owner_id":user_id}).to_list()
     if documents :
-         return [ProductRequirementsDocument(**document) for document in documents]
+        for document in documents :
+            document["document"] = None
+            document["id"] = str(document["_id"])
+        return [ProductRequirementsDocumentListItemResponse(**document) for document in documents]
     return None
-@router.get("/requirement/{id}", response_model=ProductRequirementsDocument)
+@router.get("/{id}", response_model=ProductRequirementsDocument)
 async def get_product_requirement_document(id: str, request : Request):
     """
     문서id를 기반으로 요구사항정의서를 mongodb에서 찾음
@@ -59,7 +66,17 @@ async def get_product_requirement_document(id: str, request : Request):
          return ProductRequirementsDocument(**document)
     return ProductRequirementsDocument()
 
-@router.delete("/requirement/{id}")
+@router.post("/question", response_model=DocumentQuestions)
+async def create_product_requirement_document(requirement: DocumentQuestions, request: Request):
+    """
+    요구사항 정의서 생성용 질문 생성
+    """
+    print(requirement)
+    questions = await generate_question_list(requirement.questions)
+
+    return questions
+
+@router.delete("/{id}")
 async def get_product_requirement_document(id: str, request : Request): 
     """
     문서id를 기반으로 요구사항정의서를 mongodb에서 삭제

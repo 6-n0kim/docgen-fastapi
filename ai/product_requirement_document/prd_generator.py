@@ -44,6 +44,12 @@ def generate_requirement_data(requirement_list, requirements_summary, caution = 
   return doc_obj
 
 
+async def generate_question_list(question_answer_list):
+  gen_questions = generate_questions(question_answer_list)
+  gen_questions = extract_json_from_response(gen_questions)
+  gen_questions = json.loads(gen_questions)
+  return gen_questions
+
 def generate_document(requirement):
   # questions = fixed_questions
   # question_answer_list = []
