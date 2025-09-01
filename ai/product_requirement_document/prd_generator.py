@@ -74,10 +74,11 @@ def generate_document(requirement):
 # 길찾기 사이트를 만들어 일반인을 대상으로 현재 위치와 찾는 위치를 입력하여 경로와 소요시간을 확인할 수 있도록 해야 합니다. 사용자 경험을 개선하기 위해 보기 편한 인터
 # 페이스를 고려하고, 모바일 환경에서도 헷갈리지 않게 사용할 수 있도록 고려해야 합니다.
 # """
-  require_list = generate_list(requirement)
+  summary = summary_requirements(requirement)
+  require_list = generate_list(summary)
   require_list = extract_json_from_response(require_list)
   require_list = json.loads(require_list)
-  require_data = generate_requirement_data(require_list,requirement)
+  require_data = generate_requirement_data(require_list,summary)
   return require_data
 
 if __name__ == "__main__":

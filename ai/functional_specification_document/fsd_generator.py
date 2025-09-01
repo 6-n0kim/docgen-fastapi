@@ -2,21 +2,7 @@ from pydantic import BaseModel
 from typing import List
 from .agent.list_generator import generate_list
 from .agent.detail_generator import generate_details
-from ..models import Requirement_Document
-
-class _detail(BaseModel):
-  name : str
-  description : str
-
-class _functional(BaseModel):
-  name : str
-  description : str
-  details: List[_detail]
-
-class FunctionalSpecification(BaseModel):
-  name : str
-  metadata : str
-  data : List[_functional]
+from ..models import Requirement_Document, FunctionalSpecification
 
 def generate_document(prd_data : Requirement_Document):
   functional_list = generate_list(prd_data)

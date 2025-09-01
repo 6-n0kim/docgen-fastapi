@@ -20,3 +20,18 @@ class Requirement_Document(BaseModel) :
   name : str
   metadata : Requirement_Metadata
   data : List[Requirement]
+
+
+class FunctionalSpecificationDetail(BaseModel):
+  name : str
+  description : str
+
+class FunctionalSpecificationFunctional(BaseModel):
+  name : str
+  description : str
+  details: List[FunctionalSpecificationDetail]
+
+class FunctionalSpecification(BaseModel):
+  name : str
+  metadata : str
+  data : List[FunctionalSpecificationFunctional]

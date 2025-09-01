@@ -19,5 +19,5 @@ def summary_requirements(question_answer_list,caution=''):
   chain = prompt | llm | StrOutputParser()
   return chain.invoke({
     "caution":caution,
-    "question_answer_list":'\n'.join(question_answer_list)
+    "question_answer_list":question_answer_list
   })
