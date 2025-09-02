@@ -1,5 +1,6 @@
 from ai.product_requirement_document.prd_generator import Requirement_Document
 from ai.models import FunctionalSpecification
+from ai.models import ServicePolicy
 from pydantic import BaseModel, Field
 from typing import Optional, List
 from datetime import datetime, timezone
@@ -33,6 +34,19 @@ class FunctionalSpecificationDocument(BaseModel):
   status : str = Field(...,example="finish")
   create_date : datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
   document : FunctionalSpecification = None
+
+
+
+class ServicePolicyDocumentRequest(BaseModel):
+  owner_id : str
+  project_id : str
+class ServicePolicyDocument(BaseModel):
+  owner_id : Optional[str]= Field(...,example="owner_user_id")
+  project_id : Optional[str] = Field(...,example="project_id")
+  status : Optional[str] = Field(...,example="finish")
+  create_date : datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+  document : ServicePolicy = None
+
 class DocumentIdResponse(BaseModel):
   document_id : str
 

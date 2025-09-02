@@ -5,7 +5,7 @@ from ai.utils import extract_json_from_response
 import json
 llm = llm_openai_turbo
 
-def generate_details(functional_name, functional_description, caution = ''):
+async def generate_details(functional_name, functional_description, caution = ''):
   """디테일 생성"""
   template = """
     당신은 웹 개발 기획자 입니다.
@@ -24,7 +24,7 @@ def generate_details(functional_name, functional_description, caution = ''):
   """
   prompt = PromptTemplate.from_template(template)
   chain = prompt | llm | StrOutputParser()
-  result = chain.invoke({
+  result = await chain.ainvoke({
     "caution":caution,
     "json_template": """
     [{

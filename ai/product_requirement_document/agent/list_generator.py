@@ -4,7 +4,7 @@ from langchain_core.output_parsers import StrOutputParser
 
 llm = llm_openai_4o
 
-def generate_list(summary_requirement, caution = ''):
+async def generate_list(summary_requirement, caution = ''):
   """목록 생성 함수"""
   template = """
     당신은 웹 개발 기획자 입니다.
@@ -23,7 +23,7 @@ def generate_list(summary_requirement, caution = ''):
   """
   prompt = PromptTemplate.from_template(template)
   chain = prompt | llm | StrOutputParser()
-  return chain.invoke({
+  return await chain.ainvoke({
     "caution":caution,
     "summary_requirement":summary_requirement,
     "json_template": """

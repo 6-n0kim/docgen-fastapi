@@ -4,7 +4,7 @@ from langchain_core.output_parsers import StrOutputParser
 
 llm = llm_openai_turbo
 
-def summary_requirements(question_answer_list,caution=''):
+async def summary_requirements(question_answer_list,caution=''):
   """질의응답 요약 함수"""
   template = """
     당신은 웹 개발 기획자 입니다.
@@ -17,7 +17,7 @@ def summary_requirements(question_answer_list,caution=''):
   """
   prompt = PromptTemplate.from_template(template)
   chain = prompt | llm | StrOutputParser()
-  return chain.invoke({
+  return await chain.ainvoke({
     "caution":caution,
     "question_answer_list":question_answer_list
   })

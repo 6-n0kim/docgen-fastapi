@@ -4,7 +4,7 @@ from langchain_core.output_parsers import StrOutputParser
 
 llm = llm_openai_turbo
 
-def generate_questions(questions_answers_list, caution=''):
+async def generate_questions(questions_answers_list, caution=''):
   """질문 생성 함수"""
   template = """
     당신은 웹 개발 기획자 입니다.
@@ -20,7 +20,7 @@ def generate_questions(questions_answers_list, caution=''):
   """
   prompt = PromptTemplate.from_template(template)
   chain = prompt | llm | StrOutputParser()
-  result = chain.invoke({
+  result = await chain.ainvoke({
     "caution":caution,
     "questions_answers_list":'\n'.join(questions_answers_list),
     "json_template": '{"questions":[string]}'

@@ -4,7 +4,7 @@ from langchain_core.output_parsers import StrOutputParser
 
 llm = llm_openai_turbo
 
-def generate_details(requirement_name, requirement_description, requirement_summary, caution = ''):
+async def generate_details(requirement_name, requirement_description, requirement_summary, caution = ''):
   """디테일 생성"""
   template = """
     당신은 웹 개발 기획자 입니다.
@@ -23,7 +23,7 @@ def generate_details(requirement_name, requirement_description, requirement_summ
   """
   prompt = PromptTemplate.from_template(template)
   chain = prompt | llm | StrOutputParser()
-  return chain.invoke({
+  return await chain.ainvoke({
     "caution":caution,
     "json_template": """
     [{

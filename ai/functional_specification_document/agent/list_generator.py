@@ -7,7 +7,7 @@ from ai.utils import extract_json_from_response
 
 llm = llm_openai_turbo
 
-def generate_functional_list(requirement_item : Requirement, caution = ''):
+async def generate_functional_list(requirement_item : Requirement, caution = ''):
   """질문 생성 함수"""
   template = """
     당신은 웹 개발 기획자 입니다.
@@ -25,7 +25,7 @@ def generate_functional_list(requirement_item : Requirement, caution = ''):
   """
   prompt = PromptTemplate.from_template(template)
   chain = prompt | llm | StrOutputParser()
-  return chain.invoke({
+  return await chain.ainvoke({
     "caution":caution,
     "requirement_item":requirement_item.tostring(),
     "json_template": """
@@ -36,10 +36,10 @@ def generate_functional_list(requirement_item : Requirement, caution = ''):
 """
   })
 
-def generate_list(requirement_document : Requirement_Document):
+async def generate_list(requirement_document : Requirement_Document):
   functional_list = []
   for requirement in requirement_document.data:
-    result = generate_functional_list(requirement)
+    result = await generate_functional_list(requirement)
     result = extract_json_from_response(result)
     functional_list.extend(json.loads(result))
   return functional_list

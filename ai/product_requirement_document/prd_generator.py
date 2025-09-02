@@ -15,7 +15,7 @@ llm_4o = llm_openai_4o
 
 
 fixed_questions = ["어떤걸 만들건가요?", "타겟층이 어떤 사람들 인가요?"]
-def generate_requirement_data(requirement_list, requirements_summary, caution = ''):
+async def generate_requirement_data(requirement_list, requirements_summary, caution = ''):
   
   data = []
   
@@ -23,7 +23,7 @@ def generate_requirement_data(requirement_list, requirements_summary, caution = 
   for requirement in requirement_list:
     name = requirement["name"]
     description = requirement["description"]
-    details = generate_details(name, description,requirements_summary)
+    details = await generate_details(name, description,requirements_summary)
     details = extract_json_from_response(details)
     details = json.loads(details)
     
@@ -45,12 +45,12 @@ def generate_requirement_data(requirement_list, requirements_summary, caution = 
 
 
 async def generate_question_list(question_answer_list):
-  gen_questions = generate_questions(question_answer_list)
+  gen_questions = await generate_questions(question_answer_list)
   gen_questions = extract_json_from_response(gen_questions)
   gen_questions = json.loads(gen_questions)
   return gen_questions
 
-def generate_document(requirement):
+async def generate_document(requirement):
   # questions = fixed_questions
   # question_answer_list = []
   # for question in questions:
@@ -74,11 +74,11 @@ def generate_document(requirement):
 # 길찾기 사이트를 만들어 일반인을 대상으로 현재 위치와 찾는 위치를 입력하여 경로와 소요시간을 확인할 수 있도록 해야 합니다. 사용자 경험을 개선하기 위해 보기 편한 인터
 # 페이스를 고려하고, 모바일 환경에서도 헷갈리지 않게 사용할 수 있도록 고려해야 합니다.
 # """
-  summary = summary_requirements(requirement)
-  require_list = generate_list(summary)
+  summary = await summary_requirements(requirement)
+  require_list = await generate_list(summary)
   require_list = extract_json_from_response(require_list)
   require_list = json.loads(require_list)
-  require_data = generate_requirement_data(require_list,summary)
+  require_data = await generate_requirement_data(require_list,summary)
   return require_data
 
 if __name__ == "__main__":

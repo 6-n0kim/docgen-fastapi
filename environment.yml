@@ -16,6 +16,8 @@ dependencies:
       - python-dotenv
       - langchain
       - langchain-openai
+      - langchain-google-genai
+      - langchain-anthropic
       - openai
       - openpyxl
       - crewai

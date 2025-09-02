@@ -9,7 +9,7 @@ router = APIRouter()
 
 async def generate_requirement_document(requirement, db, db_object_id):
       print("generate document")
-      document = generate_document(requirement)
+      document = await generate_document(requirement)
       result = await db.requirement_document.update_one(
           {"_id":db_object_id},
           {"$set":{"document":document.model_dump(), "status":"finished"}}
@@ -89,8 +89,7 @@ async def create_product_requirement_document(requirement: DocumentQuestions, re
         questions = await generate_question_list(requirement.questions)
         return questions
     except:
-        pass
-    return None
+        raise HTTPException(status_code=404, detail="Error")
 
 @router.delete("/{id}")
 async def get_product_requirement_document(id: str, request : Request): 
