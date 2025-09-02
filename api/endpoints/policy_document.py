@@ -6,7 +6,7 @@ import asyncio
 from bson import ObjectId
 from typing import List
 router = APIRouter()
-
+tasks: set = set()
 async def generate_policy_document(db, db_object_id, project_id):
       print("generate document spd")
       print(project_id)
@@ -22,27 +22,32 @@ async def generate_policy_document(db, db_object_id, project_id):
             {"$set":{"document":document.model_dump(), "status":"finished"}}
         )
         print("generate finish")
+        tasks.remove(project_id)
       except Exception as err:
         print(err)
         await db.policy_document.update_one(
             {"_id":db_object_id},
             {"$set":{"status":"error"}}
         )
+        tasks.remove(project_id)
 
 @router.post("/", response_model=DocumentIdResponse)
 async def create_product_functional_document(requirement: ServicePolicyDocumentRequest, request: Request):
     try:
-      db = request.app.state.db
-      db_data = ServicePolicyDocument(owner_id=requirement.owner_id, project_id=requirement.project_id,status="progress")
-      db_object = await db.policy_document.insert_one(db_data.model_dump())
-      db_object_id = db_object.inserted_id
-      # print(requirement)
-      asyncio.create_task(generate_policy_document(db,db_object_id, requirement.project_id))
-      result = DocumentIdResponse(document_id=str(db_object_id))
-      return result
-    except:
-      pass
-    return None
+        if(requirement.project_id in tasks):
+            raise HTTPException(status_code=400, detail=f"작업 진행중")
+        tasks.add(requirement.project_id)
+        
+        db = request.app.state.db
+        db_data = ServicePolicyDocument(owner_id=requirement.owner_id, project_id=requirement.project_id,status="progress")
+        db_object = await db.policy_document.insert_one(db_data.model_dump())
+        db_object_id = db_object.inserted_id
+        # print(requirement)
+        asyncio.create_task(generate_policy_document(db,db_object_id, requirement.project_id))
+        result = DocumentIdResponse(document_id=str(db_object_id))
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"처리 실패: {str(e)}")
 
 @router.delete("/{id}")
 async def get_product_functional_document(id: str, request : Request): 
@@ -53,9 +58,8 @@ async def get_product_functional_document(id: str, request : Request):
         db = request.app.state.db
         result  = await db.policy_document.delete_one({"_id":ObjectId(id)})
         return {"msg":f"delete {result.deleted_count}"}
-    except:
-        pass
-    return None
+    except Exception as e:
+      raise HTTPException(status_code=400, detail=f"처리 실패: {str(e)}")
 
 @router.get("/{id}", response_model=ServicePolicyDocument)
 async def get_product_requirement_document(id: str, request : Request):
@@ -68,5 +72,4 @@ async def get_product_requirement_document(id: str, request : Request):
         if document :
             return ServicePolicyDocument(**document)
     except Exception as e:
-        print(e)
-        raise HTTPException(status_code=404, detail="Error")
+      raise HTTPException(status_code=400, detail=f"처리 실패: {str(e)}")

@@ -6,31 +6,41 @@ import asyncio
 from bson import ObjectId
 from typing import List
 router = APIRouter()
-
-async def generate_requirement_document(requirement, db, db_object_id):
-      print("generate document")
-      document = await generate_document(requirement)
-      result = await db.requirement_document.update_one(
-          {"_id":db_object_id},
-          {"$set":{"document":document.model_dump(), "status":"finished"}}
-      )
-      print("generate finish")
+tasks: set = set()
+async def generate_requirement_document(requirement, db, db_object_id, project_id):
+    try:
+        print("generate document")
+        document = await generate_document(requirement)
+        result = await db.requirement_document.update_one(
+            {"_id":db_object_id},
+            {"$set":{"document":document.model_dump(), "status":"finished"}}
+        )
+        print("generate finish")
+        tasks.remove(project_id)
+    except:
+        result = await db.requirement_document.update_one(
+            {"_id":db_object_id},
+            {"$set":{"status":"error"}}
+        )
+        tasks.remove(project_id)
 
 @router.post("/", response_model=DocumentIdResponse)
 async def create_product_requirement_document(requirement: ProductRequirementsDocumentRequest, request: Request):
     try:
+        if(requirement.project_id in tasks):
+            raise HTTPException(status_code=400, detail=f"작업 진행중")
+        tasks.add(requirement.project_id)
         db = request.app.state.db
         db_data = ProductRequirementsDocument(owner_id=requirement.owner_id, project_id=requirement.project_id,status="progress")
         db_object = await db.requirement_document.insert_one(db_data.model_dump())
         
         db_object_id = db_object.inserted_id
         # print(requirement)
-        asyncio.create_task(generate_requirement_document(requirement.requirement,db,db_object_id))
+        asyncio.create_task(generate_requirement_document(requirement.requirement,db,db_object_id,requirement.project_id))
         result = DocumentIdResponse(document_id=str(db_object_id))
         return result
-    except:
-        pass
-    return None
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"처리 실패: {str(e)}")
 
 @router.get("/project/{project_id}",response_model=List[ProductRequirementsDocumentListItemResponse])
 async def get_product_requirement_document_project(project_id: str, request : Request): 
@@ -46,9 +56,8 @@ async def get_product_requirement_document_project(project_id: str, request : Re
                 document["document"] = None
                 document["id"] = str(document["_id"])
             return [ProductRequirementsDocumentListItemResponse(**document) for document in documents]
-    except:
-        pass
-    return None
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"처리 실패: {str(e)}")
 @router.get("/user/{user_id}",response_model=List[ProductRequirementsDocumentListItemResponse])
 async def get_product_requirement_document_user(user_id: str, request : Request): 
     """
@@ -62,9 +71,8 @@ async def get_product_requirement_document_user(user_id: str, request : Request)
                 document["document"] = None
                 document["id"] = str(document["_id"])
             return [ProductRequirementsDocumentListItemResponse(**document) for document in documents]
-    except:
-        pass
-    return None
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"처리 실패: {str(e)}")
 @router.get("/{id}", response_model=ProductRequirementsDocument)
 async def get_product_requirement_document(id: str, request : Request):
     """
@@ -75,9 +83,8 @@ async def get_product_requirement_document(id: str, request : Request):
         document = await db.requirement_document.find_one({"_id":ObjectId(id)})
         if document :
             return ProductRequirementsDocument(**document)
-    except:
-        pass
-    return ProductRequirementsDocument()
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"처리 실패: {str(e)}")
 
 @router.post("/question", response_model=DocumentQuestions)
 async def create_product_requirement_document(requirement: DocumentQuestions, request: Request):
@@ -88,8 +95,8 @@ async def create_product_requirement_document(requirement: DocumentQuestions, re
         print(requirement)
         questions = await generate_question_list(requirement.questions)
         return questions
-    except:
-        raise HTTPException(status_code=404, detail="Error")
+    except Exception as e:
+      raise HTTPException(status_code=400, detail=f"처리 실패: {str(e)}")
 
 @router.delete("/{id}")
 async def get_product_requirement_document(id: str, request : Request): 
@@ -100,6 +107,5 @@ async def get_product_requirement_document(id: str, request : Request):
         db = request.app.state.db
         result  = await db.requirement_document.delete_one({"_id":ObjectId(id)})
         return {"msg":f"delete {result.deleted_count}"}
-    except:
-        pass
-    return None
+    except Exception as e:
+      raise HTTPException(status_code=400, detail=f"처리 실패: {str(e)}")

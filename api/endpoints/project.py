@@ -35,6 +35,5 @@ async def find_document_list(project_id : str, request: Request):
             }
             # print(str(doc["_id"]))
       return results
-    except:
-      pass
-    return None
+    except Exception as e:
+      raise HTTPException(status_code=400, detail=f"처리 실패: {str(e)}")
