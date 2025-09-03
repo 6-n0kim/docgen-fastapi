@@ -9,6 +9,8 @@ pipeline {
         DOCKERFILE_PATH   = "deploy/dockerfile"
         APP_PORT_INTERNAL = "8000"   // FastAPI가 컨테이너 내부에서 사용하는 포트
         APP_PORT_EXTERNAL = "8182"   // 호스트에서 접근할 포트
+
+        ENV_FILE_CREDENTIALS_ID = "MANGLER_DOCGEN_FASTAPI_ENV_FILE"
     }
 
     stages {
@@ -16,6 +18,24 @@ pipeline {
             steps {
                 echo "📥 Git 저장소에서 코드 가져오기"
                 git branch: 'main', url: 'https://github.com/AICC-Mangler/docgen-fastapi.git'
+            }
+        }
+
+
+        stage('.env file 생성'){
+            steps{
+                script{
+                    withCredentials([
+                            file(credentialsId: ENV_FILE_CREDENTIALS_ID, variable: 'ENV_FILE')
+                        ]) {
+                            sh """
+                                echo "📄 환경 변수 파일 복사 중"
+                                cp "\$ENV_FILE" .env
+                                chmod 644 .env
+                                echo "✅ 환경 변수 파일 생성 완료"
+                            """
+                        }
+                    }
             }
         }
 
