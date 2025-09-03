@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from .endpoints import requirement_document,functional_document,project, policy_document
+from .endpoints import requirement_document,functional_document,project, policy_document, users
 
 api_router = APIRouter()
 api_router.include_router(
@@ -21,4 +21,9 @@ api_router.include_router(
   project.router, 
   prefix="/project",
   tags=["project"]
+  )
+api_router.include_router(
+  users.router, 
+  prefix="/users",
+  tags=["users"]
   )
