@@ -1,8 +1,8 @@
-from ai.llm_models import llm_openai_4o
+from ai.llm_models import llm_claude_3_7
 from langchain_core.prompts import PromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 
-llm = llm_openai_4o
+llm = llm_claude_3_7
 
 async def generate_list(summary_requirement, caution = ''):
   """목록 생성 함수"""

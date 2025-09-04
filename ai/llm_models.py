@@ -54,6 +54,13 @@ llm_gemini_2_5_flash_lite = ChatGoogleGenerativeAI(
 llm_claude_3 = ChatAnthropic(
     model="claude-3-haiku-20240307",
     temperature=0.7,
-    max_tokens=200, 
+    max_tokens=4000, 
+    api_key=os.getenv("CLAUDE_API_KEY"),
+)
+
+llm_claude_3_7 = ChatAnthropic(
+    model="claude-3-7-sonnet-20250219",
+    temperature=0.7,
+    max_tokens=64000, 
     api_key=os.getenv("CLAUDE_API_KEY"),
 )

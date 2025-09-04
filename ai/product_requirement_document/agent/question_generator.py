@@ -1,8 +1,8 @@
-from ai.llm_models import llm_openai_turbo
+from ai.llm_models import llm_openai_turbo, llm_claude_3
 from langchain_core.prompts import PromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 
-llm = llm_openai_turbo
+llm = llm_claude_3
 
 async def generate_questions(questions_answers_list, caution=''):
   """질문 생성 함수"""

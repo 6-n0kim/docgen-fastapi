@@ -1,8 +1,8 @@
-from ai.llm_models import llm_openai_turbo
+from ai.llm_models import llm_openai_turbo, llm_claude_3_7
 from langchain_core.prompts import PromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 
-llm = llm_openai_turbo
+llm = llm_claude_3_7
 
 async def generate_details(requirement_name, requirement_description, requirement_summary, caution = ''):
   """디테일 생성"""
