@@ -42,37 +42,6 @@ async def create_product_requirement_document(requirement: ProductRequirementsDo
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"처리 실패: {str(e)}")
 
-@router.get("/project/{project_id}",response_model=List[ProductRequirementsDocumentListItemResponse])
-async def get_product_requirement_document_project(project_id: str, request : Request): 
-    """
-        프로젝트 id를 기반으로 요구사항정의서 목록을 mongodb에서 찾음
-    """
-    try:
-        db = request.app.state.db
-        documents = await db.requirement_document.find({"project_id":project_id}).to_list()
-
-        if documents :
-            for document in documents :
-                document["document"] = None
-                document["id"] = str(document["_id"])
-            return [ProductRequirementsDocumentListItemResponse(**document) for document in documents]
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=f"처리 실패: {str(e)}")
-@router.get("/user/{user_id}",response_model=List[ProductRequirementsDocumentListItemResponse])
-async def get_product_requirement_document_user(user_id: str, request : Request): 
-    """
-        user id를 기반으로 요구사항정의서 목록을 mongodb에서 찾음
-    """
-    try:
-        db = request.app.state.db
-        documents = await db.requirement_document.find({"owner_id":user_id}).to_list()
-        if documents :
-            for document in documents :
-                document["document"] = None
-                document["id"] = str(document["_id"])
-            return [ProductRequirementsDocumentListItemResponse(**document) for document in documents]
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=f"처리 실패: {str(e)}")
 @router.get("/{id}", response_model=ProductRequirementsDocument)
 async def get_product_requirement_document(id: str, request : Request):
     """

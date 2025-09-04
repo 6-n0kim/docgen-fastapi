@@ -24,12 +24,3 @@ app.add_middleware(
 init_db(app)
 app.include_router(api_router, prefix="/api")
 
-@app.get("/")
-def read_root():
-    return {"Hello": "World"}
-
-
-@app.get("/items/{item_id}")
-def read_item(item_id: int, q: Union[str, None] = None):
-    print(item_id)
-    return {"item_id": item_id, "q": q}
